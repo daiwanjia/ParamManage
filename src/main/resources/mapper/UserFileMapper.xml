@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.UserFileMapper">
+	<resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.UserFile">
+		<id column="file_id" jdbcType="VARCHAR" property="fileId" />
+		<result column="file_name" jdbcType="VARCHAR" property="fileName" />
+		<result column="file_path" jdbcType="VARCHAR" property="filePath" />
+		<result column="file_original_name" jdbcType="VARCHAR"
+			property="fileOriginalName" />
+		<result column="update_time" jdbcType="VARCHAR" property="updateTime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		file_id, file_name,
+		file_path,file_original_name,update_time
+	</sql>
+	<!-- 删除单个文件 -->
+	<delete id="deleteByFileId" parameterType="java.lang.String">
+		delete from user_file
+		where file_id = #{fileId,jdbcType=VARCHAR}
+	</delete>
+
+	<!-- 新增单个文件 -->
+	<insert id="insertOne" parameterType="com.dcits.paramManage.entity.UserFile">
+		insert into user_file
+		(file_id, file_name, file_path, file_original_name,update_time)
+		values
+		(#{fileId}, #{fileName},#{filePath},#{fileOriginalName},#{updateTime})
+	</insert>
+	<!-- 修改原始文件名称（仅修改原始名称用于下载） -->
+	<update id="updateByFileId" parameterType="com.dcits.paramManage.entity.UserFile">
+		update user_file
+		set
+		file_original_name = #{fileOriginalName},update_time=#{updateTime}
+		where file_id = #{fileId}
+	</update>
+	<!-- 查询文件列表 -->
+	<select id="selectFileList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from user_file
+		<where>
+			<if test="fileOriginalName!=null and fileOriginalName!='' ">
+				file_original_name like concat('%',#{fileOriginalName},'%')
+			</if>
+		</where>
+		order by file_original_name,update_time
+		limit #{limit}
+		offset #{offset}
+	</select>
+	<!-- select count(*) -->
+	<select id="fileCount" resultType="int">
+		select count(*)
+		from user_file
+		<where>
+			<if test="fileOriginalName!=null and fileOriginalName!='' ">
+				file_original_name like concat('%',#{fileOriginalName},'%')
+			</if>
+		</where>
+	</select>
+	<select id="selectOne" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select 
+		<include refid="Base_Column_List" />
+		from user_file
+		where file_id =#{fileId}
+	</select>
+</mapper>

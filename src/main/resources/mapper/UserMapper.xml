@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.UserMapper">
+	<resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.User">
+		<id column="userid" jdbcType="VARCHAR" property="userid" />
+		<result column="username" jdbcType="VARCHAR" property="username" />
+		<result column="userpwd" jdbcType="VARCHAR" property="userpwd" />
+		<result column="userstatus" jdbcType="VARCHAR" property="userstatus" />
+		<result column="remake" jdbcType="VARCHAR" property="remake" />
+		<result column="Abs_one" jdbcType="VARCHAR" property="absOne" />
+		<result column="Abs_two" jdbcType="VARCHAR" property="absTwo" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		userid, username, userpwd, userstatus, remake, Abs_one, Abs_two
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from user_info
+		where userid = #{userid,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from user_info
+		where userid = #{userid,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dcits.paramManage.entity.User">
+		insert into user_info (userid, username, userpwd,
+		userstatus, remake, Abs_one,
+		Abs_two)
+		values (#{userid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR},
+		#{userpwd,jdbcType=VARCHAR},
+		#{userstatus,jdbcType=VARCHAR}, #{remake,jdbcType=VARCHAR}, #{absOne,jdbcType=VARCHAR},
+		#{absTwo,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dcits.paramManage.entity.User">
+		insert into user_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userid != null">
+				userid,
+			</if>
+			<if test="username != null">
+				username,
+			</if>
+			<if test="userpwd != null">
+				userpwd,
+			</if>
+			<if test="userstatus != null">
+				userstatus,
+			</if>
+			<if test="remake != null">
+				remake,
+			</if>
+			<if test="absOne != null">
+				Abs_one,
+			</if>
+			<if test="absTwo != null">
+				Abs_two,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userid != null">
+				#{userid,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="userpwd != null">
+				#{userpwd,jdbcType=VARCHAR},
+			</if>
+			<if test="userstatus != null">
+				#{userstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="remake != null">
+				#{remake,jdbcType=VARCHAR},
+			</if>
+			<if test="absOne != null">
+				#{absOne,jdbcType=VARCHAR},
+			</if>
+			<if test="absTwo != null">
+				#{absTwo,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dcits.paramManage.entity.User">
+		update user_info
+		<set>
+			<if test="username != null">
+				username = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="userpwd != null">
+				userpwd = #{userpwd,jdbcType=VARCHAR},
+			</if>
+			<if test="userstatus != null">
+				userstatus = #{userstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="remake != null">
+				remake = #{remake,jdbcType=VARCHAR},
+			</if>
+			<if test="absOne != null">
+				Abs_one = #{absOne,jdbcType=VARCHAR},
+			</if>
+			<if test="absTwo != null">
+				Abs_two = #{absTwo,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where userid = #{userid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dcits.paramManage.entity.User">
+		update user_info
+		set username = #{username,jdbcType=VARCHAR},
+		userpwd = #{userpwd,jdbcType=VARCHAR},
+		userstatus = #{userstatus,jdbcType=VARCHAR},
+		remake = #{remake,jdbcType=VARCHAR},
+		Abs_one = #{absOne,jdbcType=VARCHAR},
+		Abs_two = #{absTwo,jdbcType=VARCHAR}
+		where userid = #{userid,jdbcType=VARCHAR}
+	</update>
+	<!-- login -->
+	<select id="login" parameterType="com.dcits.paramManage.entity.User"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from user_info
+		where username = #{username,jdbcType=VARCHAR} and userpwd =
+		#{userpwd,jdbcType=VARCHAR}
+	</select>
+	<!-- select userpwd by username -->
+	<select id="findUserpwdByUsername" parameterType="com.dcits.paramManage.entity.User"
+		resultType="java.lang.String">
+		select
+		userpwd
+		from user_info
+		where username = #{username,jdbcType=VARCHAR}
+	</select>
+	<!-- select userid by username -->
+	<select id="findUserByUsername" parameterType="com.dcits.paramManage.entity.User"
+		resultType="java.lang.String">
+		select
+		userid
+		from user_info
+		where username = #{username,jdbcType=VARCHAR}
+	</select>
+</mapper>

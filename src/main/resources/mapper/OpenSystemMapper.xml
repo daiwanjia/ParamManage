@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.OpenSystemMapper">
+	<resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.OpenSystem">
+		<id column="open_module_id" jdbcType="VARCHAR" property="openModuleId" />
+		<result column="open_environment_id" jdbcType="VARCHAR"
+			property="openEnvironmentId" />
+		<result column="open_module_name" jdbcType="VARCHAR" property="openModuleName" />
+		<result column="open_module_url" jdbcType="VARCHAR" property="openModuleUrl" />
+		<result column="open_module_server" jdbcType="VARCHAR"
+			property="openModuleServer" />
+		<result column="open_module_acct" jdbcType="VARCHAR" property="openModuleAcct" />
+		<result column="open_module_updatetime" jdbcType="VARCHAR"
+			property="openModuleUpdatetime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		open_module_id, open_environment_id, open_module_name, open_module_url,
+		open_module_server,
+		open_module_acct, open_module_updatetime
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from opensystem_info
+		where open_module_id = #{openModuleId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from opensystem_info
+		where open_module_id = #{openModuleId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dcits.paramManage.entity.OpenSystem">
+		insert into opensystem_info (open_module_id, open_environment_id,
+		open_module_name, open_module_url, open_module_server,
+		open_module_acct, open_module_updatetime)
+		values (#{openModuleId,jdbcType=VARCHAR},
+		#{openEnvironmentId,jdbcType=VARCHAR},
+		#{openModuleName,jdbcType=VARCHAR}, #{openModuleUrl,jdbcType=VARCHAR},
+		#{openModuleServer,jdbcType=VARCHAR},
+		#{openModuleAcct,jdbcType=VARCHAR},
+		#{openModuleUpdatetime,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dcits.paramManage.entity.OpenSystem">
+		insert into opensystem_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="openModuleId != null">
+				open_module_id,
+			</if>
+			<if test="openEnvironmentId != null">
+				open_environment_id,
+			</if>
+			<if test="openModuleName != null">
+				open_module_name,
+			</if>
+			<if test="openModuleUrl != null">
+				open_module_url,
+			</if>
+			<if test="openModuleServer != null">
+				open_module_server,
+			</if>
+			<if test="openModuleAcct != null">
+				open_module_acct,
+			</if>
+			<if test="openModuleUpdatetime != null">
+				open_module_updatetime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="openModuleId != null">
+				#{openModuleId,jdbcType=VARCHAR},
+			</if>
+			<if test="openEnvironmentId != null">
+				#{openEnvironmentId,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleName != null">
+				#{openModuleName,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleUrl != null">
+				#{openModuleUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleServer != null">
+				#{openModuleServer,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleAcct != null">
+				#{openModuleAcct,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleUpdatetime != null">
+				#{openModuleUpdatetime,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dcits.paramManage.entity.OpenSystem">
+		update opensystem_info
+		<set>
+			<if test="openEnvironmentId != null">
+				open_environment_id = #{openEnvironmentId,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleName != null">
+				open_module_name = #{openModuleName,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleUrl != null">
+				open_module_url = #{openModuleUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleServer != null">
+				open_module_server = #{openModuleServer,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleAcct != null">
+				open_module_acct = #{openModuleAcct,jdbcType=VARCHAR},
+			</if>
+			<if test="openModuleUpdatetime != null">
+				open_module_updatetime = #{openModuleUpdatetime,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where open_module_id = #{openModuleId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dcits.paramManage.entity.OpenSystem">
+		update opensystem_info
+		set open_environment_id = #{openEnvironmentId,jdbcType=VARCHAR},
+		open_module_name = #{openModuleName,jdbcType=VARCHAR},
+		open_module_url = #{openModuleUrl,jdbcType=VARCHAR},
+		open_module_server = #{openModuleServer,jdbcType=VARCHAR},
+		open_module_acct = #{openModuleAcct,jdbcType=VARCHAR},
+		open_module_updatetime = #{openModuleUpdatetime,jdbcType=VARCHAR}
+		where open_module_id = #{openModuleId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="openModuleList" resultMap="BaseResultMap"
+		parameterType="com.dcits.paramManage.entity.OpenSystem">
+		select ope.*,env.environment_name
+		from opensystem_info ope
+		join environment_info env
+		on ope.open_environment_id=env.environment_id
+		<where>
+			<if test="openModuleName!=null and openModuleName!='' ">
+				and open_module_name like concat('%',#{openModuleName},'%')
+			</if>
+			<if test="openEnvironmentId!=null and openEnvironmentId!='' ">
+				and open_environment_id like concat('%',#{openEnvironmentId},'%')
+			</if>
+			<if test="openModuleServer!=null and openModuleServer!='' ">
+				and open_module_server like concat('%',#{openModuleServer},'%')
+			</if>
+		</where>
+		limit #{limit}
+		offset #{offset}
+	</select>
+
+	<select id="openModuleCount" resultType="int"
+		parameterType="com.dcits.paramManage.entity.OpenSystem">
+		select count(*)
+		from opensystem_info ope
+		join environment_info env
+		on ope.open_environment_id=env.environment_id
+		<where>
+			<if test="openModuleName!=null and openModuleName!='' ">
+				and open_module_name like concat('%',#{openModuleName},'%')
+			</if>
+			<if test="openEnvironmentId!=null and openEnvironmentId!='' ">
+				and open_environment_id like concat('%',#{openEnvironmentId},'%')
+			</if>
+			<if test="openModuleServer!=null and openModuleServer!='' ">
+				and open_module_server like concat('%',#{openModuleServer},'%')
+			</if>
+		</where>
+	</select>
+</mapper>

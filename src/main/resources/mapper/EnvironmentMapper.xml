@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.EnvironmentMapper">
+	<resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.Environment">
+		<id column="environment_id" jdbcType="VARCHAR" property="environmentId" />
+		<result column="environment_name" jdbcType="VARCHAR" property="environmentName" />
+		<result column="environment_url" jdbcType="VARCHAR" property="environmentUrl" />
+		<result column="environment_dns" jdbcType="VARCHAR" property="environmentDns" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		environment_id, environment_name, environment_url,
+		environment_dns
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from environment_info
+		where environment_id =
+		#{environmentId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		environment_info
+		where environment_id =
+		#{environmentId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dcits.paramManage.entity.Environment">
+		insert into environment_info
+		(environment_id, environment_name,environment_url, environment_dns)
+		values
+		(#{environmentId,jdbcType=VARCHAR},#{environmentName,jdbcType=VARCHAR},
+		#{environmentUrl,jdbcType=VARCHAR}, #{environmentDns,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.dcits.paramManage.entity.Environment">
+		insert into environment_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="environmentId != null">
+				environment_id,
+			</if>
+			<if test="environmentName != null">
+				environment_name,
+			</if>
+			<if test="environmentUrl != null">
+				environment_url,
+			</if>
+			<if test="environmentDns != null">
+				environment_dns,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="environmentId != null">
+				#{environmentId,jdbcType=VARCHAR},
+			</if>
+			<if test="environmentName != null">
+				#{environmentName,jdbcType=VARCHAR},
+			</if>
+			<if test="environmentUrl != null">
+				#{environmentUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="environmentDns != null">
+				#{environmentDns,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dcits.paramManage.entity.Environment">
+		update environment_info
+		<set>
+			<if test="environmentName != null">
+				environment_name = #{environmentName,jdbcType=VARCHAR},
+			</if>
+			<if test="environmentUrl != null">
+				environment_url = #{environmentUrl,jdbcType=VARCHAR},
+			</if>
+			<if test="environmentDns != null">
+				environment_dns = #{environmentDns,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where environment_id = #{environmentId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dcits.paramManage.entity.Environment">
+		update
+		environment_info
+		set environment_name =
+		#{environmentName,jdbcType=VARCHAR},
+		environment_url =
+		#{environmentUrl,jdbcType=VARCHAR},
+		environment_dns =
+		#{environmentDns,jdbcType=VARCHAR}
+		where environment_id =
+		#{environmentId,jdbcType=VARCHAR}
+	</update>
+	<!-- select all -->
+	<select id="queryEnvironmentInfo" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from environment_info
+	</select>
+	<!-- select count(*) -->
+	<select id="queryEnvironmentInfoCount" resultType="int">
+		select
+		count(*)
+		from environment_info
+	</select>
+	<!-- 判断是否存在记录 存在返回1，否则0 -->
+	<select id="judgeExistEnvironment" resultType="int">
+		select count(*)
+		from environment_info
+		where environment_id=#{environmentId,jdbcType=VARCHAR}
+	</select>
+</mapper>

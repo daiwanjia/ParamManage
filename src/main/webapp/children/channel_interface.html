@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>渠道调用接口清单</title>
+<link rel="stylesheet" href="../frame/layui/css/layui.css">
+<link rel="stylesheet" href="../frame/static/css/style.css">
+<link rel="icon" href="../frame/static/image/code.png">
+<script src="../js/jquery.min.js"></script>
+<script src="../js/json2.js"></script>
+</head>
+
+<body class="body">
+	<!-- 工具集 -->
+	<div class="my-btn-box">
+		<div style="width: 40%;float: left;display: inline;">
+			<form class="layui-form" >
+				<div class="layui-input-inline">
+					<select  lay-verify="required" id="queryChannel" lay-filter="selectChannel"></select>	
+				</div>
+				<a class="layui-btn btn-default layui-btn-radius" id="exportChnnIntf" style="margin-left: 20px;"><i class="layui-icon" style="font-size: 30px;">&#xe601;</i>导出</a>
+			</form>
+		</div>
+		<div style="width: 4%;float: left;display: inline;">
+			&nbsp;
+		</div>
+		<div style="width: 56%;float: left;display: inline;">
+			<form class="layui-form">
+				<div class="layui-input-inline">
+					<select  lay-verify="required" id="querysystemId"></select>	
+				</div>
+				<div class="layui-input-inline" style="margin-left: 30px;">
+					<input type="text" placeholder="请输入服务英文名称" class="layui-input" id="queryServiceEnname" autocomplete="off">
+				</div>
+				<a class="layui-btn btn-add btn-default" id="queryInterface" style="margin-left: 10px;">查询</a>
+				<a class="layui-btn btn-add btn-default" id="resetQueryInterface">清空</a>
+			</form>
+		</div>
+	</div>
+	<!--绿色分割线-->
+	<hr class="layui-bg-green">
+	<!-- 表格左 渠道关联服务 -->
+	<div style="width: 40%;float: left;display: inline;">
+		<table id="dateTable" lay-filter="dateTable"></table>	
+	</div>
+	<!--中间  操作-->
+	<div style="width: 4%;float: left;display: inline;">
+		<!--添加渠道调用接口按钮-->
+		<div  style="text-align: center;margin-top: 200px;">
+			<button class="layui-btn addChnnIntf" data-type="getCheckData"><i class="layui-icon">&#xe65a;</i></button>
+		</div>
+		<!--删除渠道调用接口按钮-->
+		<div  style="text-align: center;margin-top: 50px;">
+			<button class="layui-btn delChnnIntf" data-type="getCheckData"><i class="layui-icon">&#xe65b;</i></button>
+		</div>
+	</div>
+	<!-- 表格右 所有服务 -->
+	<div style="width: 56%;float: left;display: inline;">
+		<table id="intfTable" lay-filter="intfTable"></table>	
+	</div>
+	<script type="text/javascript" src="../frame/layui/layui.js"></script>
+	<script type="text/javascript" src="../js/index.js"></script>
+	<script type="text/javascript">
+		
+			// layui方法
+			var table;
+			var tableIns;
+			var layer;
+			var form;
+			var tableData;
+			var channelId;
+			layui.use(['table', 'form', 'layer', 'vip_table','laydate'], function() {
+
+				// 操作对象
+				var	vipTable = layui.vip_table,$ = layui.jquery,laydate = layui.laydate;
+				layer = layui.layer;
+				form = layui.form;
+				table = layui.table;
+				
+				// 表格渲染
+					tableIns = table.render({
+					elem: '#dateTable' ,//指定原始表格元素选择器（推荐id选择器）
+					height: vipTable.getFullHeight() ,//容器高度
+//					toolbar: 'true',
+					title: '调用接口清单',
+					size: 'sm' ,
+					cols: [
+						[ //标题栏
+							{type:'checkbox',fixed:'left'},	
+							{field: 'serviceNo',title: '服务交易码',width: 100, sort: true}, 
+							{field: 'serviceEnname',title: '服务编码',width: 150, sort: true}, 
+							{field: 'serviceCnname',title: '服务名称',width: 150, sort: true},
+							{field: 'systemCnname',title: '服务提供方',width: 100, sort: true},
+						]
+					],
+					id: 'channelTable',
+					page: true,
+					limits: [1000],
+					limit: 1000 , //默认采用10        				
+					loading: true,
+					done: function(res, curr, count) {
+					}
+				});
+				
+				//导出选中数据到Excel
+				$('#exportChnnIntf').click(function(){
+					var checkStatus = table.checkStatus('channelTable')
+					,data = checkStatus.data;
+					if(data.length>0){
+						table.exportFile('channelTable',data, 'xls'); 
+					}else{
+						layer.msg("未选择数据！");
+					}
+					
+				});
+				
+				//关键词查询:channelId layui-监听select 渲染
+				form.on('select(selectChannel)',function(data){
+					channelId=$('#queryChannel').val();
+					table.reload('channelTable',{
+						method: 'get',
+						url: '/channel/selectChnnIntf?channelId='+channelId
+					});
+					form.render('select');
+				});
+				//清空搜索框
+				$('#resetQuery').click(function(){
+					$('#queryChannel').val('');
+				});
+				
+				//监听表格复选框选择
+				table.on('checkbox(dateTable)', function(obj){
+				});
+				//定义删除接口 active
+				var active = {
+				    getCheckData: function(){ //获取选中数据,提交后删除
+				        var checkStatus = table.checkStatus('channelTable')
+				        ,data = checkStatus.data;
+				        if(data.length>0){
+				        	layer.confirm('确定要删除这'+data.length+'条数据吗？', function(index){
+						      	$.ajax({
+						      		type:"post",
+						      		url:"/channel/delChnnIntf",
+						      		async:true,
+						      		contentType:"application/json; charset=UTF-8",
+						      		data:JSON.stringify(data),
+						      		success:function(date){
+						      			layer.close(index);
+						      			layer.msg(date.msg);
+						      			table.reload('channelTable');
+						      		},
+						      		error:function(date){
+						      			layer.close(index);
+						      			layer.alert("系统异常！");
+						      		}
+						      	});		
+				        
+				       		});
+				        }
+				        
+				    }  
+				};
+				//删除接口  执行
+				$('.layui-btn,.delChnnIntf').on('click', function(){
+				  	var type = $(this).data('type');
+				    active[type] ? active[type].call(this) : '';
+				});
+				
+				//所有的接口清单
+				tableIns = table.render({
+					elem: '#intfTable' ,//指定原始表格元素选择器（推荐id选择器）
+					height: vipTable.getFullHeight() ,//容器高度
+					size: 'sm' ,
+					cols: [
+						[ //标题栏
+							{type:  'checkbox',fixed:'left'},	
+							{field: 'serviceNo',title: '服务交易码',width: 100,sort: true},
+							{field: 'serviceEnname',title: '服务英文名称',width: 170,sort:true}, 
+							{field: 'serviceCnname',title: '服务中文名称',width: 150, sort: true}, 
+							{field: 'systemCnname',title: '服务提供方',width: 100, sort: true},
+							{field: 'serviceDesc',title: '服务描述',width: 150, sort: true}, 
+							{field: 'serviceVersion',title: '接口版本',width: 100, sort: true},
+							{field: 'serviceUpdatetime',title: '更新时间',width: 150, sort: true}, 
+							{field: 'serviceId',title: '接口ID',width: 200},
+						]
+					],
+					id: 'intfTable',
+					url: '/intfService/serviceInfo',
+					method: 'post',
+					page: true,
+					limits: [100, 200, 500,1000],
+					limit: 100 , //默认采用10        				
+					loading: true,
+					done: function(res, curr, count) {
+						
+					}
+				});
+				
+				//关键词查询:提供方系统
+				$('#queryInterface').on('click',function(){
+					var systemId=$('#querysystemId').val();
+					var serviceEnname=$('#queryServiceEnname').val();
+					table.reload('intfTable',{
+						where:{
+							"systemId":systemId,
+							"serviceEnname":serviceEnname
+						}
+					});	
+				});	
+				
+				//清空搜索框
+				$('#resetQueryInterface').click(function(){
+					$('#querysystemId').val('');
+					$('#queryServiceEnname').val('');
+				});
+				
+				//监听表格复选框选择
+				table.on('checkbox(intfTable)', function(obj){
+				});
+				//定义添加接口active
+				var intfTableActive = {
+				    getCheckData: function(){ //获取选中数据
+				        var checkStatus = table.checkStatus('intfTable')
+				        ,data = checkStatus.data;
+				        if(!channelId){
+				        	layer.msg("请选择渠道！")
+				        }else{
+				        	if(data.length>0){
+						      	layer.confirm('确定要添加这'+data.length+'个接口到该渠道吗？', function(index){
+							      	$.ajax({
+							      		type:"post",
+							      		url:"/channel/addChnnIntf?channelId="+channelId,
+							      		async:true,
+							      		contentType:"application/json; charset=UTF-8",
+							      		data:JSON.stringify(data),
+							      		success:function(date){
+							      			layer.close(index);
+							      			layer.msg(date.msg);
+							      			table.reload('channelTable');
+							      		},
+							      		error:function(date){
+							      			layer.close(index);
+							      			layer.alert("系统异常");
+							      		}
+							      	});		
+						        });
+					        }
+				        }
+				       
+				      
+				    }
+				    
+				};
+				//添加接口 执行  
+				$('layui-btn,.addChnnIntf').on('click', function(){
+				    var type = $(this).data('type');
+				    intfTableActive[type] ? intfTableActive[type].call(this) : '';
+				});
+				
+			});
+			
+			//页面加载完毕时执行
+			$(document).ready(function(){
+				//获取可选择的系统信息
+				$.ajax({
+					type:"post",
+					url:"/channel/allChannel",
+					async:true,
+					dataType:"json",
+					success:function(data){
+						$('#queryChannel').empty();
+						 $("#queryChannel").append("<option value=''>请选择渠道</option>");
+					        for(var i=0;i<data.length;i++){
+					        	$("#queryChannel").append('<option value='+data[i].channelId+'>'+data[i].channelName+'</option>');
+					        }
+					    layui.use('form', function(){
+							var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+							//但是，如果你的HTML是动态生成的，自动渲染就会失效
+			  				//因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+							form.render();
+						});    
+					        
+					}
+				});
+				
+				$.ajax({
+					type:"post",
+					url:"/provideSystem/allSystem",
+					async:true,
+					dataType:"json",
+					success:function(data){
+						$('#querysystemId').empty();
+						 $("#querysystemId").append("<option value=''>请选择提供方系统</option>");
+					        for(var i=0;i<data.length;i++){
+					        	$("#querysystemId").append('<option value='+data[i].systemId+'>'+data[i].systemCnname+'('+data[i].systemEnname+')'+'</option>');
+					        }
+					        
+					    layui.use('form', function(){
+							var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+							//但是，如果你的HTML是动态生成的，自动渲染就会失效
+			  				//因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+							form.render();
+						});  	
+					}
+				});
+			});
+			
+		</script>
+
+</body>
+
+</html>

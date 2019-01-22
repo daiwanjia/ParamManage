@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.ProvideSystemMapper">
+	<!-- 二级缓存，sqlSession关闭后能缓存 一级缓存，在同一个sqlSession 禁用缓存，在sql中添加属性 useCache="false" 
+		刷新缓存 flushCache="true" -->
+	<!-- <cache type="改mybatis的cache接口，整合的第三方缓存框架，Redis，ehcache，memcache类路径，再加入缓存框架的配置文件 
+		"></cache> -->
+	<resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.ProvideSystem">
+		<id column="system_id" jdbcType="VARCHAR" property="systemId" />
+		<result column="system_enname" jdbcType="VARCHAR" property="systemEnname" />
+		<result column="system_cnname" jdbcType="VARCHAR" property="systemCnname" />
+		<result column="remake" jdbcType="VARCHAR" property="remake" />
+		<result column="abs_two" jdbcType="VARCHAR" property="absTwo" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		system_id, system_enname, system_cnname, remake, abs_two
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from system_info
+		where system_id = #{systemId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from system_info
+		where system_id = #{systemId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.dcits.paramManage.entity.ProvideSystem">
+		insert into system_info (system_id,system_enname, system_cnname, remake,
+		abs_two)
+		values (#{systemId,jdbcType=VARCHAR},#{systemEnname,jdbcType=VARCHAR},
+		#{systemCnname,jdbcType=VARCHAR},
+		#{remake,jdbcType=VARCHAR}, #{absTwo,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.dcits.paramManage.entity.ProvideSystem">
+		insert into system_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="systemId != null">
+				system_id,
+			</if>
+			<if test="systemEnname != null">
+				system_enname,
+			</if>
+			<if test="systemCnname != null">
+				system_cnname,
+			</if>
+			<if test="remake != null">
+				remake,
+			</if>
+			<if test="absTwo != null">
+				abs_two,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="systemId != null">
+				#{systemId,jdbcType=VARCHAR},
+			</if>
+			<if test="systemEnname != null">
+				#{systemEnname,jdbcType=VARCHAR},
+			</if>
+			<if test="systemCnname != null">
+				#{systemCnname,jdbcType=VARCHAR},
+			</if>
+			<if test="remake != null">
+				#{remake,jdbcType=VARCHAR},
+			</if>
+			<if test="absTwo != null">
+				#{absTwo,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.dcits.paramManage.entity.ProvideSystem">
+		update system_info
+		<set>
+			<if test="systemEnname != null">
+				system_enname = #{systemCnname,jdbcType=VARCHAR},
+			</if>
+			<if test="systemCnname != null">
+				system_cnname = #{systemCnname,jdbcType=VARCHAR},
+			</if>
+			<if test="remake != null">
+				remake = #{remake,jdbcType=VARCHAR},
+			</if>
+			<if test="absTwo != null">
+				abs_two = #{absTwo,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where system_id = #{systemId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.dcits.paramManage.entity.ProvideSystem">
+		update system_info
+		set system_enname = #{systemEnname,jdbcType=VARCHAR},
+		system_cnname = #{systemCnname,jdbcType=VARCHAR},
+		remake = #{remake,jdbcType=VARCHAR},
+		abs_two = #{absTwo,jdbcType=VARCHAR}
+		where system_id = #{systemId,jdbcType=VARCHAR}
+	</update>
+	<!-- query systemInfo -->
+	<select id="systemInfoList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from system_info
+		<where>
+			<if test="systemEnname!=null and systemEnname!='' ">
+				and system_enname like concat('%',#{systemEnname},'%')
+			</if>
+			<if test="systemCnname!=null and systemCnname!='' ">
+				and system_cnname like concat('%',#{systemCnname},'%')
+			</if>
+		</where>
+		limit #{limit}
+		offset #{offset}
+	</select>
+	<!-- select count(*) -->
+	<select id="systemCount" resultType="Integer">
+		select count(*)
+		from system_info
+		<where>
+			<if test="systemEnname!=null and systemEnname!='' ">
+				and system_enname like concat('%',#{systemEnname},'%')
+			</if>
+			<if test="systemCnname!=null and systemCnname!='' ">
+				and system_cnname like concat('%',#{systemCnname},'%')
+			</if>
+		</where>
+
+	</select>
+	<!-- select querySystemAll -->
+	<select id="querySystemAll" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" />
+		from system_info
+	</select>
+	<!-- like '%${value}%' -->
+	<!-- 使用resultMap的collection对关联查询的多条记录映射到一个list集合属性中 一对一 使用resultMap的association -->
+</mapper>

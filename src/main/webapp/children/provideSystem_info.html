@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>系统参数管理</title>
+<link rel="stylesheet" href="../frame/layui/css/layui.css">
+<!--<link rel="stylesheet" href="http://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">-->
+<link rel="stylesheet" href="../frame/static/css/style.css">
+<link rel="icon" href="../frame/static/image/code.png">
+<script src="../js/jquery.min.js"></script>
+<script src="../js/json2.js"></script>
+</head>
+
+<body class="body">
+	<!-- 工具集 -->
+	<div class="my-btn-box">
+		<span class="fl"> <!--<a class="layui-btn layui-btn-danger radius btn-delect" id="btn-delete-all">批量删除</a>-->
+			<a class="layui-btn btn-add btn-default" id="systemAdd">新增系统</a> <a
+			class="layui-btn btn-add btn-default" id="btn-refresh"><i
+				class="layui-icon">&#x1002;</i></a>
+			<div class="layui-input-inline" style="margin-left: 33px;">
+				<input type="text" placeholder="请输入系统英文名称" class="layui-input"
+					id="querySystemEnname">
+			</div>
+			<div class="layui-input-inline"
+				style="margin-right: 12px; margin-left: 10px;">
+				<input type="text" placeholder="请输入系统中文名称" class="layui-input"
+					id="querySystemCnname">
+			</div>
+			<button class="layui-btn mgl-20" id="query">查询</button>
+			<button class="layui-btn mgl-20" style="margin-left: 20px;"
+				id="resetQuery">清空</button>
+		</span>
+	</div>
+	<div class="layui-row" id="updateDiv" style="display: none;">
+		<div class="layui-col-md10"
+			style="margin-left: 50px; margin-top: 20px; text-align: center;">
+			<form class="layui-form layui-form-pane"
+				lay-filter="systemFormFilter">
+				<div hidden="hidden">
+					<input type="text" id="systemId" name="systemId"
+						class="layui-input">
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">系统英文名称：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="systemEnname" name="systemEnname"
+							class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">系统中文名称：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="systemCnname" name="systemCnname"
+							class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">备用字段：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="absTwo" name="absTwo" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">备注：</label>
+					<div class="layui-input-block" style="margin: auto;">
+						<textarea id="remake" class="layui-textarea" name="remake"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block"
+						style="margin-left: auto; margin-right: auto; text-align: center;">
+						<input type="button" class="layui-btn btn-default" value="提交"
+							onclick="updateform();" />
+						<button type="reset" hidden="hidden" id="resetbutton" />
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="layui-row" id="insertDiv" style="display: none;">
+		<div class="layui-col-md10"
+			style="margin-left: 50px; margin-top: 20px;">
+			<form class="layui-form layui-form-pane">
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">系统英文名称：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="systemEnname1" name="systemEnname"
+							class="layui-input" autocomplete="off">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">系统中文名称：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="systemCnname1" name="systemCnname"
+							class="layui-input" autocomplete="off">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">备用字段：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="absTwo1" name="absTwo" class="layui-input"
+							autocomplete="off">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">备注：</label>
+					<div class="layui-input-block" style="margin: auto;">
+						<textarea id="remake1" class="layui-textarea" name="remake"
+							autocomplete="off"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block"
+						style="margin-left: auto; margin-right: auto; text-align: center;"">
+						<input type="button" class="layui-btn btn-default" value="提交"
+							onclick="insertSystem();" />
+						<button type="reset" hidden="hidden" id="resetbutton1" />
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 表格 -->
+	<table id="dateTable" lay-filter="dateTable"></table>
+
+	<script type="text/javascript" src="../frame/layui/layui.js"></script>
+	<script type="text/javascript" src="../js/index.js"></script>
+	<!-- 表格操作按钮集 -->
+	<script type="text/html" id="barOption">
+			<a class="layui-btn layui-btn-xs"  lay-event="edit">编辑</a>
+			<a class="layui-btn layui-btn-danger layui-btn-xs"  lay-event="del">删除</a>
+		</script>
+	<script type="text/javascript">
+			// layui方法
+			var table;
+			var tableIns;
+			var layer;
+			var form;
+			layui.use(['table', 'form', 'layer', 'vip_table'], function() {
+
+				// 操作对象
+				 
+				var	vipTable = layui.vip_table,
+					$ = layui.jquery;
+				layer = layui.layer;
+				form = layui.form;
+				table = layui.table;
+				// 表格渲染
+					tableIns = table.render({
+					elem: '#dateTable' ,//指定原始表格元素选择器（推荐id选择器）
+					height: vipTable.getFullHeight() ,//容器高度			
+					size: 'sm' ,
+					cols: [
+						[ //标题栏
+							{type:'checkbox',fixed:'left'},
+							/*{checkbox: true,sort: true,fixed: true,space: true}, */
+							{field: 'systemId',title: '系统ID',width: 150,sort:true,}, 
+							{field: 'systemEnname',title: '系统英文名称',width: 150,sort:true,}, 
+							{field: 'systemCnname',title: '系统中文名称',width: 200, sort: true, totalRow: true}, 
+							{field: 'remake',title: '备注',width: 200}, 
+							{field: 'absTwo',title: '备用字段',width: 150}, 
+							{fixed: 'right',title: '操作',width: 150,align: 'center',toolbar: '#barOption'} //这里的toolbar值是模板元素的选择器
+						]
+					],
+					id: 'dataCheck',
+					url: '/provideSystem/systemInfo',
+					method: 'post',
+					page: true,
+					limits: [10, 20, 30, 50,100],
+					limit: 10 , //默认采用10        				
+					loading: false,
+					done: function(res, curr, count) {
+						//如果是异步请求数据方式，res即为你接口返回的信息。
+						//如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
+						//console.log(res);
+
+						//得到当前页码
+						//console.log(curr);
+
+						//得到数据总量
+						//console.log(count);
+					}
+				});
+
+				// 获取选中行
+				table.on('checkbox(dataCheck)', function(obj) {
+					layer.msg('123');
+					console.log(obj.checked); //当前是否选中状态
+					console.log(obj.data); //选中行的相关数据
+					console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+				});
+
+				// 刷新
+				$('#btn-refresh').on('click', function() {
+					//清空搜素框
+					$('#querySystemEnname').val('');
+					$('#querySystemCnname').val('');
+					//初始化表格
+					table.reload('dataCheck');
+				});
+				
+				//关键词查询
+				$('#query').on('click',function(){
+					var systemEnname=$('#querySystemEnname').val();
+					var systemCnname=$('#querySystemCnname').val();
+					var index = layer.msg('查询中，请稍候...',{icon: 16,time:false,shade:0});
+						tableIns.reload({
+						where:{
+							"systemEnname":systemEnname,
+							"systemCnname":systemCnname
+						}
+					});
+						layer.close(index);
+					
+				});
+				
+				$("#systemAdd").click(function() {
+					layer.open({
+						type: 1,
+						title:'新增系统',
+						skin: 'layui-layer-molv', //加上边框
+						area: ['500px', '500px'], //宽高
+						content:$("#insertDiv")
+					});
+				});
+			
+				//监听行工具事件
+			  	table.on('tool(dateTable)', function(obj){
+				    var data = obj.data;
+				    console.log(data)
+				    if(obj.event === 'del'){
+					    layer.confirm('真的删除行么', function(index){
+					      	$.ajax({
+					      		type:"post",
+					      		url:"/provideSystem/deleteSystem",
+					      		async:true,
+					      		dataType:"json",
+					      		data:{
+					      			"systemId":data.systemId
+					      		},
+					      		success:function(date){
+					      			layer.close(index);
+					      			layer.msg(date.msg);
+					      			tableIns.reload();
+					      		},
+					      		error:function(date){
+					      			layer.close(index);
+					      			layer.msg("系统异常！");
+					      		}
+					      	});			        
+					    });
+				    } else if(obj.event === 'edit'){
+				      	layer.open({
+				            type:1,
+				            title:"修改系统信息",
+				            skin: 'layui-layer-molv',
+				            area: ['500px', '500px'],
+				            content:$("#updateDiv")
+		       			 });
+		       			 setFormValue(data);//动态向表单赋值
+				    }
+	  			});
+	  			
+	  			function setFormValue(data){
+	  				console.log(data.systemCnname);
+	  				var formData={
+	  					systemId:data.systemId,
+	  					systemEnname:data.systemEnname,
+	  					systemCnname:data.systemCnname,
+	  					remake:data.remake,
+	  					absTwo:data.absTwo
+	  				};
+	  				form.val("systemFormFilter",formData);
+					form.render(null,'systemFormFilter');
+			  	}		
+			});
+			
+			function updateform(){
+				var systemId=$('#systemId').val();
+				var systemEnname=$('#systemEnname').val();
+				var systemCnname=$('#systemCnname').val();
+				var remake=$('#remake').val();
+				var absTwo=$('#absTwo').val();
+				var param={
+						"systemId":systemId,
+						"systemEnname":systemEnname,
+						"systemCnname":systemCnname,
+						"remake":remake,
+						"absTwo":absTwo
+					};
+				$.ajax({
+					type: "post",
+					url: "/provideSystem/updateSystem",
+					async: true,
+					contentType:"application/json; charset=UTF-8",
+					data:JSON.stringify(param),
+					success: function(date) {					
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg(date.msg);
+						$('#resetbutton').click();
+					},
+					error: function(date) {						
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg("系统异常！");
+					}
+				});
+			}
+			
+			function insertSystem(){
+				var systemEnname=$('#systemEnname1').val();
+				var systemCnname=$('#systemCnname1').val();
+				var remake=$('#remake1').val();
+				var absTwo=$('#absTwo1').val();
+				var param={
+						"systemEnname":systemEnname,
+						"systemCnname":systemCnname,
+						"remake":remake,
+						"absTwo":absTwo
+					};
+				$.ajax({
+					type: "post",
+					url: "/provideSystem/addSystem",
+					async: true,
+					contentType:"application/json; charset=UTF-8",
+					data:JSON.stringify(param),
+					success: function(date) {
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg(date.msg);
+						$('#resetbutton1').click();
+					},
+					error: function(date) {						
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg("系统异常！");
+					}
+				});
+			}
+			//清空搜索框
+			$('#resetQuery').click(function(){
+				$('#querySystemEnname').val('');
+				$('#querySystemCnname').val('');
+			})
+		</script>
+
+</body>
+
+</html>

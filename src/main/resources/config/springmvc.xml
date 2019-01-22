@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	http://www.springframework.org/schema/mvc 
+	http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-4.3.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+	">
+
+	<!-- 全局异常处理器 -->
+	<bean class="com.dcits.paramManage.common.GlobalHandlerException"></bean>
+
+	<!-- 上下文 开启注解扫描 -->
+	<context:component-scan base-package="com.dcits.paramManage.controller"></context:component-scan>
+	<!-- 前后缀 -->
+	<!-- <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"> 
+		<property name="prefix" value="/WEB-INF/jsp/"></property> <property name="suffix" 
+		value=".jsp"></property> </bean> -->
+	<!-- spring mvc 能够访问静态内容 -->
+	<mvc:resources location="/js/" mapping="/js/**" />
+	<mvc:resources location="/css/" mapping="/css/**" />
+	<mvc:resources location="/images/" mapping="/images/**" />
+	<mvc:resources location="/html/" mapping="/html/**" />
+	<mvc:resources location="/frame/" mapping="/frame/**" />
+	<mvc:resources location="/children/" mapping="/children/**" />
+	<mvc:resources location="/fonts/" mapping="/fonts/**" />
+	<mvc:resources location="/json/" mapping="/json/**" />
+
+	<!-- <bean id="myAop" class="com.zbank.controller.MyAop"></bean> <bean id="systemController" 
+		class="com.zbank.controller.SystemController"></bean> -->
+	<!-- 开启aop注解 -->
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	<!-- 配置aop操作 -->
+	<!-- <aop:config> 配置切入点 <aop:pointcut expression="execution(* com.zbank.controller.SystemController.*(..))" 
+		id="pointcut1"/> 配置切面 把增强用到方法上面 <aop:aspect ref="myAop"> 配置增强类型 method：增强类里面使用哪个方法作为前置 
+		<aop:before method="before" pointcut-ref="pointcut1"/> <aop:after-returning 
+		method="after" pointcut-ref="pointcut1"/> <aop:around method="around" pointcut-ref="pointcut1"/> 
+		</aop:aspect> </aop:config> -->
+
+	<!-- 配置校验器 -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<!-- 校验器，使用hibernate校验器 -->
+		<property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+		<!-- 指定校验使用的资源文件，在文件中配置校验错误信息，如果不指定则默认使用classpath下面的ValidationMessages.properties文件 -->
+		<property name="validationMessageSource" ref="messageSource" />
+	</bean>
+	<!-- 校验错误信息配置文件 -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<!-- 资源文件名 -->
+		<property name="basenames">
+			<list>
+				<value>classpath:config/validationMessage</value>
+			</list>
+		</property>
+		<!-- 资源文件编码格式 -->
+		<property name="defaultEncoding" value="UTF-8"/>
+		<!-- 对资源文件内容缓存时间，单位秒 -->
+		<property name="cacheSeconds" value="120" />
+	</bean>
+	<!-- 文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 设置文件上传的最大尺寸 50M-->
+		<property name="maxUploadSize" value="52428800"></property>
+		<property name="defaultEncoding" value="utf-8"></property>
+	</bean>
+	<mvc:annotation-driven validator="validator"></mvc:annotation-driven>
+</beans>

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>渠道信息管理</title>
+<link rel="stylesheet" href="../frame/layui/css/layui.css">
+<!--<link rel="stylesheet" href="http://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">-->
+<link rel="stylesheet" href="../frame/static/css/style.css">
+<link rel="icon" href="../frame/static/image/code.png">
+<script src="../js/jquery.min.js"></script>
+<script src="../js/json2.js"></script>
+</head>
+
+<body class="body">
+
+	<!-- 工具集 -->
+	<div class="my-btn-box">
+		<span class="fl">
+			<form class="layui-form">
+				<a class="layui-btn btn-add btn-default" id="channelAdd">新增渠道</a> <a
+					class="layui-btn btn-add btn-default" id="btn-refresh"><i
+					class="layui-icon">&#x1002;</i></a>
+
+				<div class="layui-input-inline" style="margin-left: 33px;">
+					<input type="text" placeholder="请输入渠道名称" class="layui-input"
+						id="queryChannelName" autocomplete="off">
+				</div>
+				<div class="layui-input-inline" style="margin-left: 10px;">
+					<select name="channelStatus" lay-verify="required"
+						id="queryChannelStatus">
+						<option value="">请选择渠道接入状态</option>
+						<option value="沙箱">沙箱</option>
+						<option value="开发">开发</option>
+						<option value="UAT">UAT</option>
+						<option value="生产">生产</option>
+						<option value="未接入">未接入</option>
+						<option value="暂停">暂停</option>
+						<option value="灰度">灰度</option>
+						<option value="商务">商务</option>
+					</select>
+				</div>
+				<!--渠道对接后端系统查询-->
+				<div class="layui-input-inline" style="margin-left: 10px;">
+					<select  lay-verify="required" id="querysystemId">
+					</select>	
+				</div>
+				<a class="layui-btn btn-add btn-default" id="query"
+					style="margin-left: 20px;">查询</a> <a
+					class="layui-btn btn-add btn-default" style="margin-left: 20px;"
+					id="resetQuery">清空</a>
+			</form>
+		</span>
+	</div>
+	<!--编辑框-->
+	<div class="layui-row" id="updateDiv" style="display: none;">
+		<div class="layui-col-md10"
+			style="margin-left: 50px; margin-top: 20px;">
+			<form class="layui-form layui-form-pane"
+				lay-filter="formFilter">
+				<!--渠道ID-->
+				<div hidden="hidden">
+					<input type="text" id="channelId" name="channelId">
+				</div>
+				<!--关联表id-->
+				<div hidden="hidden">
+					<input type="text" id="sid" name="sid">
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">对接后端系统：</label>
+					<div class="layui-input-inline">
+						<select name="systemId" lay-verify="required" id="systemId">
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">渠道名称：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="channelName" name="channelName"
+							class="layui-input" autocomplete="off" lay-verify="required">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">渠道接入状态：</label>
+					<div class="layui-input-inline">
+						<select name="channelStatus" lay-verify="required"
+							id="channelStatus">
+							<option value="沙箱">沙箱</option>
+							<option value="开发">开发</option>
+							<option value="UAT">UAT</option>
+							<option value="生产">生产</option>
+							<option value="未接入">未接入</option>
+							<option value="暂停">暂停</option>
+							<option value="灰度">灰度</option>
+							<option value="商务">商务</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">渠道负责人：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="manager" name="manager" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">接入时间：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="startTime" class="layui-input" id="startTime">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">上线时间：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="onlineTime" class="layui-input" id="onlineTime">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">sdk版本号：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="sdkVersion" class="layui-input"  id="sdkVersion" >
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">备注：</label>
+					<div class="layui-input-block" style="margin: auto;">
+						<textarea id="remake" class="layui-textarea" name="remake"></textarea>
+					</div>
+				</div>		
+				<div class="layui-form-item">
+					<div class="layui-input-block"
+						style="margin-left: auto; margin-right: auto; text-align: center;">
+						<input type="button" class="layui-btn btn-default" value="提交" onclick="updateChannel();" />
+						<button type="reset" hidden="hidden" id="resetbutton" />
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!--新增框-->
+	<div class="layui-row" id="insertDiv" style="display: none;">
+		<div class="layui-col-md10"
+			style="margin-left: 50px; margin-top: 20px;">
+			<form class="layui-form layui-form-pane">
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">对接后端系统：</label>
+					<div class="layui-input-inline">
+						<select name="systemId" id="systemId1" lay-verify="required">
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">渠道名称：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="channelName1" name="channelName"
+							class="layui-input" autocomplete="off" lay-verify="required">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">渠道接入状态：</label>
+					<div class="layui-input-inline">
+						<select name="channelStatus" lay-verify="required" id="channelStatus1">
+							<option value="沙箱">沙箱</option>
+							<option value="开发">开发</option>
+							<option value="UAT">UAT</option>
+							<option value="生产">生产</option>
+							<option value="未接入">未接入</option>
+							<option value="暂停">暂停</option>
+							<option value="灰度">灰度</option>
+							<option value="商务">商务</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">渠道负责人：</label>
+					<div class="layui-input-inline">
+						<input type="text" id="manager1" name="manager"
+							class="layui-input" lay-verify="required">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">接入时间：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="startTime" class="layui-input" id="startTime1" >
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">上线时间：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="onlineTime" class="layui-input" id="onlineTime1">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">sdk版本号：</label>
+					<div class="layui-input-inline">
+						<input type="text" name="sdkVersion" class="layui-input" id="sdkVersion1" >
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label" style="width: 130px">备注：</label>
+					<div class="layui-input-block" style="margin: auto;">
+						<textarea id="remake1" name="remake" class="layui-textarea" autocomplete="off"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block"
+						style="margin-left: auto; margin-right: auto; text-align: center;">
+						<input type="button" class="layui-btn btn-default" value="提交"
+							onclick="insertChannel();" />
+						<button type="reset" hidden="hidden" id="resetbutton1" />
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<!-- 表格 -->
+	<table id="dateTable" lay-filter="dateTable"></table>
+	
+	<script type="text/javascript" src="../frame/layui/layui.js"></script>
+	<script type="text/javascript" src="../js/index.js"></script>
+	<!-- 表格操作按钮集 -->
+	<script type="text/html" id="barOption">
+			<a class="layui-btn layui-btn-xs"  lay-event="edit">编辑</a>
+			<a class="layui-btn layui-btn-danger layui-btn-xs"  lay-event="del">删除</a>
+	</script>
+	<script type="text/javascript">
+		
+			// layui方法
+			var table;
+			var tableIns;
+			var layer;
+			var form;
+			var tableData;
+			layui.use(['table', 'form', 'layer', 'vip_table','laydate'], function() {
+
+				// 操作对象
+				 
+				var	vipTable = layui.vip_table,$ = layui.jquery,laydate = layui.laydate;
+				layer = layui.layer;
+				form = layui.form;
+				table = layui.table;
+				// 表格渲染
+					tableIns = table.render({
+					elem: '#dateTable' ,//指定原始表格元素选择器（推荐id选择器）
+					height: vipTable.getFullHeight() ,//容器高度
+					size: 'sm' ,
+					cols: [
+						[ //标题栏
+							{type:'checkbox',fixed:'left'},	
+							{field: 'channelId',title: '渠道ID',width: 100, sort: true},
+							{field: 'channelName',title: '渠道名称',width: 150,sort:true}, 
+							{field: 'systemCnname',title: '对接后端系统',width: 120,sort:true,align: 'center'},
+							{field: 'channelStatus',title: '渠道接入状态',width: 120, sort: true,align: 'center'}, 
+							{field: 'manager',title: '负责人',width: 100, sort: true,align: 'center'},
+							{field: 'startTime',title: '接入时间',width: 150, sort: true}, 
+							{field: 'onlineTime',title: '上线时间',width: 150, sort: true}, 
+							{field: 'sdkVersion',title: 'sdk版本',width: 100, sort: true,align: 'center'},
+							{field: 'remake',title: '备注',width: 200, sort: true}, 							
+							{fixed: 'right',title: '操作',width: 150,align: 'center',toolbar: '#barOption'} //这里的toolbar值是模板元素的选择器
+						]
+					],
+					id: 'ChannelTable',
+					url: '/channel/channelInfo',
+					method: 'post',
+					page: true,
+					limits: [10, 20, 30, 50,100],
+					limit: 10 , //默认采用10        				
+					loading: true,
+					done: function(res, curr, count) {
+						
+					}
+				});
+
+				// 获取选中行
+				table.on('checkbox(ChannelTable)', function(obj) {
+					layer.msg('123');
+					console.log(obj.checked); //当前是否选中状态
+					console.log(obj.data); //选中行的相关数据
+					console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+				});
+
+				// 刷新
+				$('#btn-refresh').on('click', function() {
+					//清空搜素框
+					$('#queryChannelName').val('');
+					$('#queryChannelStatus').val('');
+					//初始化表格
+					table.reload('ChannelTable');
+				});
+				
+				//关键词查询:ChannelEnname,ChannelStatus,querysystemId
+				$('#query').on('click',function(){
+					var channelEnname=$('#queryChannelName').val();
+					var channelStatus=$('#queryChannelStatus').val();
+					var systemId=$('#querysystemId').val();
+					tableIns.reload({
+						where:{
+							"channelName":channelName,
+							"channelStatus":channelStatus,
+							"systemId":systemId
+						}
+					});
+
+				});
+				//清空搜索框
+				$('#resetQuery').click(function(){
+					$('#queryChannelName').val('');
+					$('#queryChannelStatus').val('');
+					$('#querysystemId').val('');
+				})
+				
+				//新增系统layer
+				$("#channelAdd").click(function() {
+					layer.open({
+						type: 1,
+						title:'接入新渠道',
+						skin: 'layui-layer-molv', //加上边框
+						area: ['500px', '500px'], //宽高
+						content:$("#insertDiv")
+					});
+				});
+			
+				//监听行工具事件 edit or delete 
+			  	table.on('tool(dateTable)', function(obj){
+				    var data = obj.data;
+//				    console.log(data)
+				    if(obj.event === 'del'){
+					    layer.confirm('真的删除行么', function(index){
+					      	$.ajax({
+					      		type:"post",
+					      		url:"/channel/delChannel",
+					      		async:true,
+					      		dataType:"json",
+					      		data:{
+					      			"channelId":data.channelId,
+					      			"sid":data.sid
+					      		},
+					      		success:function(date){
+					      			layer.close(index);
+					      			layer.msg(date.msg);
+					      			tableIns.reload();
+					      		},
+					      		error:function(date){
+					      			layer.close(index);
+					      			layer.msg("系统异常！");
+					      		}
+					      	});			        
+					    });
+				    } else if(obj.event === 'edit'){//edit layer
+				      	layer.open({
+				            type:1,
+				            title:"修改渠道信息",
+				            skin: 'layui-layer-molv',
+				            area: ['500px', '500px'],
+				            content:$("#updateDiv")
+		       			 });
+		       			 setFormValue(data);
+				    } else if(obj.event==='detail'){
+				    	layer.open({
+				            type:1,
+				            title:"查看渠道调用接口清单",
+				            skin: 'layui-layer-molv',
+				            area: ['1000px', '1000px'],
+				            content:$("#updateDiv")
+		       			 });
+				    }
+	  			});
+	  			//动态向表单赋值
+	  			function setFormValue(data){
+	  				var formData={
+	  					channelId:data.channelId,
+	  					channelName:data.channelName,
+	  					channelStatus:data.channelStatus,
+	  					manager:data.manager,
+	  					startTime:data.startTime,
+	  					onlineTime:data.onlineTime,
+	  					sdkVersion:data.sdkVersion,
+	  					remake:data.remake,
+	  					systemId:data.systemId,
+	  					sid:data.sid
+	  				};
+	  				form.val("formFilter",formData);
+					form.render(null,'formFilter');
+			  	}	
+			  	
+			  	//时间选择器
+			  	laydate.render({ 
+				  elem: '#startTime1,#startTime,#onlineTime1,#onlineTime'
+				  ,format: 'yyyy年MM月dd日' //可任意组合
+				  ,theme: 'molv'//颜色选择器
+				});
+				
+			});
+			//提交接口服务变动
+			function updateChannel(){
+				var channelId=$('#channelId').val();
+				var channelName=$('#channelName').val();
+				var channelStatus=$('#channelStatus').val();
+				var manager=$('#manager').val();
+				var startTime=$('#startTime').val();
+				var onlineTime=$('#onlineTime').val();
+				var sdkVersion=$('#sdkVersion').val();
+				var remake=$('#remake').val();
+				var systemId=$('#systemId').val();
+				var sid=$('#sid').val();
+				var param={
+						"channelId":channelId,
+						"channelName":channelName,
+						"channelStatus":channelStatus,
+						"manager":manager,
+						"startTime":startTime,
+						"onlineTime":onlineTime,
+						"sdkVersion":sdkVersion,
+						"remake":remake,
+						"systemId":systemId,
+						"sid":sid
+				};
+				$.ajax({
+					type: "post",
+					url: "/channel/updateChannel",
+					async: true,
+					contentType:"application/json; charset=UTF-8",
+					data:JSON.stringify(param),
+					dataType:"json",
+					success: function(date) {					
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg(date.msg);
+						$('#resetbutton').click();
+					},
+					error: function(date) {						
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg("系统异常！");
+					}
+				});
+			}
+			//添加一个服务接口提交
+			function insertChannel(){
+				var channelName=$('#channelName1').val();
+				var channelStatus=$('#channelStatus1').val();
+				var manager=$('#manager1').val();
+				var startTime=$('#startTime1').val();
+				var onlineTime=$('#onlineTime1').val();
+				var sdkVersion=$('#sdkVersion1').val();
+				var remake=$('#remake').val();
+				var systemId=$('#systemId1').val();
+				var param={
+						"channelName":channelName,
+						"channelStatus":channelStatus,
+						"manager":manager,
+						"startTime":startTime,
+						"onlineTime":onlineTime,
+						"sdkVersion":sdkVersion,
+						"remake":remake
+					};
+				$.ajax({
+					type: "post",
+					url: "/channel/addChannel?systemId="+systemId,
+					async: true,
+					contentType:"application/json; charset=UTF-8",
+					data:JSON.stringify(param),
+					success: function(date) {
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg(date.msg);
+						$('#resetbutton1').click();
+					},
+					error: function(date) {						
+						tableIns.reload();
+						layer.closeAll();
+						layer.msg("系统异常！");
+					}
+				});
+			}
+			
+			//页面加载完毕时执行
+				$(document).ready(function(){
+					//获取可选择的系统信息
+					$.ajax({
+						type:"post",
+						url:"/provideSystem/allSystem",
+						async:true,
+						dataType:"json",
+						success:function(data){
+							$('#systemId1,#querysystemId,#systemId').empty();
+							 $("#systemId1,#querysystemId,#systemId").append("<option value=''>请选择提供方系统</option>");
+						        for(var i=0;i<data.length;i++){
+						        	$("#systemId1,#querysystemId,#systemId").append('<option value='+data[i].systemId+'>'+data[i].systemCnname+'('+data[i].systemEnname+')'+'</option>');
+						        }
+						    layui.use('form', function(){
+								var form = layui.form; //只有执行了这一步，部分表单元素才会自动修饰成功
+								//但是，如果你的HTML是动态生成的，自动渲染就会失效
+				  				//因此你需要在相应的地方，执行下述方法来手动渲染，跟这类似的还有 element.init();
+								form.render();
+							});    
+						}
+					});
+				});
+			
+			
+
+		</script>
+</body>
+
+</html>

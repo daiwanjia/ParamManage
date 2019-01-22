@@ -1,0 +1,3 @@
+#配置错误提示信息
+environment.name.isBlank=请输入环境名称
+environment.url.isBlank=请输入环境的外网域名

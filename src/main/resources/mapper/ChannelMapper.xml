@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.ChannelMapper">
+	<resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.Channel">
+		<id column="channel_id" jdbcType="VARCHAR" property="channelId" />
+		<result column="channel_name" jdbcType="VARCHAR" property="channelName" />
+		<result column="channel_status" jdbcType="VARCHAR" property="channelStatus" />
+		<result column="manager" jdbcType="VARCHAR" property="manager" />
+		<result column="start_time" jdbcType="VARCHAR" property="startTime" />
+		<result column="online_time" jdbcType="VARCHAR" property="onlineTime" />
+		<result column="sdk_version" jdbcType="VARCHAR" property="sdkVersion" />
+		<result column="remake" jdbcType="VARCHAR" property="remake" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		channel_id, channel_name, channel_status, manager, start_time, online_time,
+		sdk_version, remake
+	</sql>
+	<!-- 删除渠道信息 -->
+	<delete id="deleteByChannelId" parameterType="java.lang.String">
+		delete from channel_info
+		where channel_id = #{channelId,jdbcType=VARCHAR}
+	</delete>
+	<!-- 新增渠道 -->
+	<insert id="insertChannel" parameterType="com.dcits.paramManage.entity.Channel">
+		insert into channel_info (channel_id, channel_name, channel_status, manager,
+		start_time, online_time, sdk_version,
+		remake)
+		values (#{channelId,jdbcType=VARCHAR}, #{channelName,jdbcType=VARCHAR},
+		#{channelStatus,jdbcType=VARCHAR},
+		#{manager,jdbcType=VARCHAR}, #{startTime,jdbcType=VARCHAR}, #{onlineTime,jdbcType=VARCHAR},
+		#{sdkVersion,jdbcType=VARCHAR}, #{remake,jdbcType=VARCHAR})
+	</insert>
+	<!-- 更新渠道信息 -->
+	<update id="updateByChannelId" parameterType="com.dcits.paramManage.entity.Channel">
+		update channel_info
+		<set>
+			<if test="channelName != null">
+				channel_name = #{channelName,jdbcType=VARCHAR},
+			</if>
+			<if test="channelStatus != null">
+				channel_status = #{channelStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				manager = #{manager,jdbcType=VARCHAR},
+			</if>
+			<if test="startTime != null">
+				start_time = #{startTime,jdbcType=VARCHAR},
+			</if>
+			<if test="onlineTime != null">
+				online_time = #{onlineTime,jdbcType=VARCHAR},
+			</if>
+			<if test="sdkVersion != null">
+				sdk_version = #{sdkVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="remake != null">
+				remake = #{remake,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where channel_id = #{channelId,jdbcType=VARCHAR}
+	</update>
+
+	<select id="channelList" parameterType="java.util.HashMap"
+		resultType="java.util.HashMap">
+		select a.sid as sid,
+		b.channel_id as channelId,b.channel_name as channelName,b.channel_status as
+		channelStatus,
+		b.manager as manager,b.start_time as startTime,b.remake as remake,
+		b.online_time as onlineTime,b.sdk_version as sdkVersion,
+		c.system_id as systemId,c.system_enname as systemEnname, c.system_cnname as
+		systemCnname
+		from link a
+		LEFT JOIN channel_info b on a.source=b.channel_id
+		LEFT JOIN system_info c on a.relate=c.system_id
+		<where>
+			a.rank='chnn_sys'
+			<if test="channelName!=null and channelName!='' ">
+				and b.channel_name like
+				concat('%',#{channelName},'%')
+			</if>
+			<if test="channelStatus!=null and channelStutas!='' ">
+				and b.channel_status like
+				concat('%',#{channelStatus},'%')
+			</if>
+			<if test="systemId!=null and systemId!='' ">
+				and c.system_id = #{systemId}
+			</if>
+		</where>
+		ORDER BY c.system_enname,b.channel_status,b.channel_name
+		limit #{limit}
+		offset #{offset}
+	</select>
+	<!-- select count(*) -->
+	<select id="channelCount" resultType="int" parameterType="java.util.HashMap">
+		select count(*)
+		from link a
+		LEFT JOIN channel_info b on
+		a.source=b.channel_id
+		LEFT JOIN system_info c on a.relate=c.system_id
+		<where>
+			a.rank='chnn_sys'
+			<if test="channelName!=null and channelName!='' ">
+				and b.channel_name like
+				concat('%',#{channelName},'%')
+			</if>
+			<if test="channelStatus!=null and channelStutas!='' ">
+				and b.channel_status like
+				concat('%',#{channelStatus},'%')
+			</if>
+			<if test="systemId!=null and systemId!='' ">
+				and c.system_id = #{systemId}
+			</if>
+		</where>
+	</select>
+
+	<!-- 关联关系创建 -->
+	<insert id="insertLink" parameterType="java.util.HashMap">
+		insert into link
+		(sid,source,relate,rank)
+		VALUES(#{sid},#{source},#{relate},#{rank})
+	</insert>
+	<!-- update link -->
+	<update id="updateLink" parameterType="java.util.HashMap">
+		update link
+		<set>
+			<if test="source!=null and source!='' ">
+				source=#{source},
+			</if>
+			<if test="relate!=null and relate!='' ">
+				relate=#{relate},
+			</if>
+			<if test="rank!=null and rank!='' ">
+				rank=#{rank},
+			</if>
+		</set>
+		where sid=#{sid}
+	</update>
+	<!-- 删除关联关系 -->
+	<delete id="deleteLink" parameterType="java.lang.String">
+		delete from link
+		where
+		sid=#{sid}
+	</delete>
+	<!-- 查询所有渠道 (排序按照系统分类)-->
+	<select id="allChannelQry" resultMap="BaseResultMap">
+		select
+		b.channel_id, b.channel_name, b.channel_status, b.manager, 
+		b.start_time, b.online_time,b.sdk_version, b.remake
+		from link a
+		LEFT JOIN channel_info b on a.source=b.channel_id
+		LEFT JOIN system_info c on a.relate=c.system_id
+		where a.rank='chnn_sys'
+		ORDER BY c.system_enname,b.channel_status,b.channel_name
+	</select>
+
+	<!-- 查询渠道调用接口清单 -->
+	<select id="chnnIntfInfoList" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		<!-- select a.sid as sid,c.channel_id as channelId,c.channel_name as channelName, 
+			b.service_id as serviceId,b.service_enname as serviceEnname, b.service_cnname 
+			as serviceCnname,b.service_no as serviceNo from link a LEFT JOIN service_info 
+			b on a.source=b.service_id LEFT JOIN channel_info c on a.relate=c.channel_id 
+			where a.rank='intf_chnn' and c.channel_id=#{channelId} order by b.service_enname -->
+		SELECT tmp.*,sys.system_cnname as systemCnname FROM
+		link
+		left join
+		(select a.sid as sid,c.channel_id as channelId,c.channel_name as channelName,
+		b.service_id as serviceId,b.service_enname as serviceEnname,
+		b.service_cnname as serviceCnname,b.service_no as serviceNo
+		from link a
+		LEFT JOIN service_info b on a.source=b.service_id
+		LEFT JOIN channel_info c on a.relate=c.channel_id
+		) as tmp
+		on tmp.serviceId=link.source
+		LEFT JOIN system_info sys
+		ON sys.system_id=link.relate
+		where tmp.channelId=#{channelId} and
+		link.rank='intf_sys'
+		order by tmp.serviceEnname
+	</select>
+	<!-- 查询渠道调用接口清单数量 -->
+	<select id="chnnIntfCount" resultType="int">
+		select count(*)
+		from link a
+		LEFT JOIN service_info b on a.source=b.service_id
+		LEFT JOIN
+		channel_info c on a.relate=c.channel_id
+		where a.rank='intf_chnn' and
+		c.channel_id=#{channelId}
+	</select>
+	<!-- 渠道添加接口 -->
+	<insert id="insertChnnIntf" parameterType="java.util.List">
+		insert into link (sid,source,relate,rank) values
+		<foreach collection="list" item="linkmap" separator=",">
+			(#{linkmap.sid},#{linkmap.source},#{linkmap.relate},#{linkmap.rank})
+		</foreach>
+	</insert>
+	<!-- 查询渠道调用接口 id -->
+	<select id="selectChnnIntfId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select b.service_id as serviceId
+		from link a
+		LEFT JOIN
+		service_info b on a.source=b.service_id
+		LEFT JOIN channel_info c on
+		a.relate=c.channel_id
+		where a.rank='intf_chnn' and
+		c.channel_id=#{channelId}
+	</select>
+	<!-- 渠道删除调用接口 -->
+	<delete id="delChnnIntf" parameterType="java.util.List">
+		delete from link where sid in
+		<foreach collection="list" item="sid" open="(" separator=","
+			close=")">
+			#{sid}
+		</foreach>
+	</delete>
+</mapper>

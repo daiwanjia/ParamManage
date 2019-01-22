@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.IntfServiceMapper">
+	<resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.IntfService">
+		<id column="service_id" jdbcType="VARCHAR" property="serviceId" />
+		<result column="service_no" jdbcType="VARCHAR" property="serviceNo" />
+		<result column="service_enname" jdbcType="VARCHAR" property="serviceEnname" />
+		<result column="service_cnname" jdbcType="VARCHAR" property="serviceCnname" />
+		<result column="service_desc" jdbcType="VARCHAR" property="serviceDesc" />
+		<result column="service_status" jdbcType="VARCHAR" property="serviceStatus" />
+		<result column="service_version" jdbcType="VARCHAR" property="serviceVersion" />
+		<result column="service_updatetime" jdbcType="VARCHAR"
+			property="serviceUpdatetime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		service_id, service_no, service_enname, service_cnname,
+		service_system,
+		service_desc, service_status,
+		service_version,
+		service_updatetime
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from service_info
+		where service_id = #{serviceId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		service_info
+		where service_id = #{serviceId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insertService" parameterType="com.dcits.paramManage.entity.IntfService">
+		insert into service_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="serviceId != null">
+				service_id,
+			</if>
+			<if test="serviceNo != null">
+				service_no,
+			</if>
+			<if test="serviceEnname != null">
+				service_enname,
+			</if>
+			<if test="serviceCnname != null">
+				service_cnname,
+			</if>
+			<if test="serviceDesc != null">
+				service_desc,
+			</if>
+			<if test="serviceStatus != null">
+				service_status,
+			</if>
+			<if test="serviceVersion != null">
+				service_version,
+			</if>
+			<if test="serviceUpdatetime != null">
+				service_updatetime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="serviceId != null">
+				#{serviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceNo != null">
+				#{serviceNo,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceEnname != null">
+				#{serviceEnname,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceCnname != null">
+				#{serviceCnname,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceDesc != null">
+				#{serviceDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceStatus != null">
+				#{serviceStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceVersion != null">
+				#{serviceVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceUpdatetime != null">
+				#{serviceUpdatetime,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 查询此接口编码是否存在 -->
+	<select id="selectIntfexist" parameterType="java.lang.String" resultType="int">
+		select count(*)
+		from service_info
+		where service_enname=#{serviceEnname}
+	</select>
+	<!-- 修改接口信息  禁止修改服务英文名称 -->
+	<update id="updateByPrimaryKeySelective" parameterType="com.dcits.paramManage.entity.IntfService">
+		update service_info
+		<set>
+			<if test="serviceNo != null">
+				service_no = #{serviceNo,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceCnname != null">
+				service_cnname = #{serviceCnname,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceDesc != null">
+				service_desc = #{serviceDesc,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceStatus != null">
+				service_status = #{serviceStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceVersion != null">
+				service_version = #{serviceVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="serviceUpdatetime != null">
+				service_updatetime =
+				#{serviceUpdatetime,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where service_id = #{serviceId,jdbcType=VARCHAR}
+	</update>
+	
+	<!-- query serviceList -->
+	<select id="serviceList" resultType="java.util.HashMap"
+		parameterType="java.util.HashMap">
+		select a.sid as sid,
+		b.service_id as serviceId, b.service_no as
+		serviceNo,
+		b.service_enname as serviceEnname, b.service_cnname as
+		serviceCnname,
+		b.service_desc as serviceDesc, b.service_status as
+		serviceStatus,
+		b.service_version as serviceVersion,
+		b.service_updatetime as serviceUpdatetime,
+		c.system_id as systemId,
+		c.system_enname as systemEnname, c.system_cnname as systemCnname
+		from
+		link a
+		LEFT JOIN service_info b
+		on a.source=b.service_id
+		LEFT JOIN
+		system_info c
+		on a.relate=c.system_id
+		<where>
+			a.rank="intf_sys"
+			<if test="serviceEnname!=null and serviceEnname!='' ">
+				and b.service_enname like
+				concat('%',#{serviceEnname},'%')
+			</if>
+			<if test="serviceCnname!=null and serviceCnname!='' ">
+				and b.service_cnname like
+				concat('%',#{serviceCnname},'%')
+			</if>
+			<if test="serviceStatus!=null and serviceStatus!='' ">
+				and b.service_status like
+				concat('%',#{serviceStatus},'%')
+			</if>
+			<if test="systemId!=null and systemId!='' ">
+				and c.system_id like concat('%',#{systemId},'%')
+			</if>
+		</where>
+		order by b.service_enname,c.system_enname
+		limit #{limit}
+		offset
+		#{offset}
+	</select>
+	<!-- select count(*) -->
+	<select id="seriveCount" resultType="int" parameterType="java.util.HashMap">
+		select count(*)
+		from link a
+		LEFT JOIN service_info b
+		on
+		a.source=b.service_id
+		LEFT JOIN system_info c
+		on a.relate=c.system_id
+		<where>
+			a.rank="intf_sys"
+			<if test="serviceEnname!=null and serviceEnname!='' ">
+				and b.service_enname like
+				concat('%',#{serviceEnname},'%')
+			</if>
+			<if test="serviceCnname!=null and serviceCnname!='' ">
+				and b.service_cnname like
+				concat('%',#{serviceCnname},'%')
+			</if>
+			<if test="serviceStatus!=null and serviceStatus!='' ">
+				and b.service_status like
+				concat('%',#{serviceStatus},'%')
+			</if>
+			<if test="systemId!=null and systemId!='' ">
+				and c.system_id like concat('%',#{systemId},'%')
+			</if>
+		</where>
+	</select>
+
+	<!-- 关联关系创建 -->
+	<insert id="insertLink" parameterType="java.util.HashMap">
+		insert into link
+		(sid,source,relate,rank)
+		VALUES(#{sid},#{source},#{relate},#{rank})
+	</insert>
+	<!-- update link -->
+	<update id="updateLink" parameterType="java.util.HashMap">
+		update link
+		<set>
+			<if test="source!=null and source!='' ">
+				source=#{source},
+			</if>
+			<if test="relate!=null and relate!='' ">
+				relate=#{relate},
+			</if>
+			<if test="rank!=null and rank!='' ">
+				rank=#{rank},
+			</if>
+		</set>
+		where sid=#{sid}
+	</update>
+	<!-- 删除关联关系 -->
+	<delete id="deleteLink" parameterType="java.lang.String">
+		delete from link
+		where
+		sid=#{sid}
+	</delete>
+	
+	<!-- 查询服务接口调用频率 -->
+	<select id="selectIntfCallfrqncy" resultType="java.util.HashMap">
+		select b.service_id as serviceId,b.service_no as serviceNo,
+		b.service_enname as serviceEnname,b.service_cnname as serviceCnname,count(*) as count
+		from link a
+		LEFT JOIN service_info b on a.source=b.service_id 
+		LEFT JOIN channel_info c on a.relate=c.channel_id
+		<where>
+			a.rank='intf_chnn' 
+			<if test="serviceEnname!=null and serviceEnname!='' ">
+				and b.service_enname like concat('%',#{serviceEnname},'%')
+			</if>
+		</where> 
+		group by b.service_enname
+		order by count(*) DESC
+		limit #{limit}
+		offset #{offset}
+	</select>
+	<!-- 查询被调用的服务接口总数 -->
+	<select id="selectIntfCallfrqncyCount" resultType="int">
+		select count(distinct b.service_id)
+		from link a
+		LEFT JOIN service_info b on a.source=b.service_id 
+		LEFT JOIN channel_info c on a.relate=c.channel_id
+		where a.rank='intf_chnn' 
+	</select>
+	<!-- 查询调用此服务接口的渠道 -->
+	<select id="selectCalledChnn" parameterType="java.lang.String" resultType="java.lang.String">
+		select c.channel_name as channelName
+		from link a
+		LEFT JOIN service_info b on a.source=b.service_id 
+		LEFT JOIN channel_info c on a.relate=c.channel_id
+		where a.rank='intf_chnn' and b.service_id=#{serviceId}
+		order by c.channel_name
+	</select>
+</mapper>
