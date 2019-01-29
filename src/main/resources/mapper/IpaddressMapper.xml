@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dcits.paramManage.mapper.IpaddressMapper">
+  <resultMap id="BaseResultMap" type="com.dcits.paramManage.entity.Ipaddress">
+    <id column="ip_id" jdbcType="VARCHAR" property="ipId" />
+    <result column="ipadr" jdbcType="VARCHAR" property="ipadr" />
+    <result column="ip_environment" jdbcType="VARCHAR" property="ipEnvironment" />
+    <result column="ip_channel" jdbcType="VARCHAR" property="ipChannel" />
+    <result column="ip_remake" jdbcType="VARCHAR" property="ipRemake" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ip_id, ipadr, ip_environment, ip_channel, ip_remake
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ipaddress
+    where ip_id = #{ipId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from ipaddress
+    where ip_id = #{ipId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insertIp" parameterType="com.dcits.paramManage.entity.Ipaddress">
+    insert into ipaddress (ip_id, ipadr, ip_environment, 
+      ip_channel, ip_remake)
+    values (#{ipId,jdbcType=VARCHAR}, #{ipadr,jdbcType=VARCHAR}, #{ipEnvironment,jdbcType=VARCHAR}, 
+      #{ipChannel,jdbcType=VARCHAR}, #{ipRemake,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dcits.paramManage.entity.Ipaddress">
+    update ipaddress
+    <set>
+      <if test="ipadr != null">
+        ipadr = #{ipadr,jdbcType=VARCHAR},
+      </if>
+      <if test="ipEnvironment != null">
+        ip_environment = #{ipEnvironment,jdbcType=VARCHAR},
+      </if>
+      <if test="ipChannel != null">
+        ip_channel = #{ipChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="ipRemake != null">
+        ip_remake = #{ipRemake,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ip_id = #{ipId,jdbcType=VARCHAR}
+  </update>
+  <select id="selectIpList" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from ipaddress
+  	<where>
+  		<if test="ipadr!=null and ipadr!='' ">
+  			and ipadr like concat ('%',#{ipadr},'%')
+  		</if>
+  		<if test="ipChannel != null and ipChannel != '' ">
+  			and ip_channel like concat('%', #{ipChannel},'%')
+  		</if>
+  		<if test="ipEnvironment != null and ipEnvironment != '' ">
+  			and ip_environment like concat('%',#{ipEnvironment},'%') 
+  		</if>
+  	</where>
+  	order by ip_channel
+  	limit #{limit}
+  	offset #{offset}
+  </select>
+  <select id="selectIpCount" resultType="int">
+    select count(*)
+  	from ipaddress
+  	<where>
+  		<if test="ipadr!=null and ipadr!='' ">
+  			and ipadr like concat ('%',#{ipadr},'%')
+  		</if>
+  		<if test="ipChannel != null and ipChannel != '' ">
+  			and ip_channel like concat('%', #{ipChannel},'%')
+  		</if>
+  		<if test="ipEnvironment != null and ipEnvironment != '' ">
+  			and ip_environment like concat('%',#{ipEnvironment},'%') 
+  		</if>
+  	</where>
+  </select>
+  <insert id="batchImportIp" parameterType="java.util.List">
+  	 insert into ipaddress (ip_id,ipadr,ip_environment,ip_channel,ip_remake) value
+  	<foreach collection="list" item="ip" separator=",">
+			(#{ip.ipId},#{ip.ipadr},#{ip.ipEnvironment},#{ip.ipChannel},#{ip.ipRemake})
+	</foreach>
+  </insert>
+</mapper>

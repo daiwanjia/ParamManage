@@ -27,12 +27,10 @@
 					class="layui-icon">&#x1002;</i></a>
 
 				<div class="layui-input-inline" style="margin-left: 33px;">
-					<input type="text" placeholder="请输入渠道名称" class="layui-input"
-						id="queryChannelName" autocomplete="off">
+					<input type="text" placeholder="请输入渠道名称" class="layui-input" id="queryChannelName" autocomplete="off">
 				</div>
 				<div class="layui-input-inline" style="margin-left: 10px;">
-					<select name="channelStatus" lay-verify="required"
-						id="queryChannelStatus">
+					<select name="channelStatus" lay-verify="required" id="queryChannelStatus">
 						<option value="">请选择渠道接入状态</option>
 						<option value="沙箱">沙箱</option>
 						<option value="开发">开发</option>
@@ -49,10 +47,8 @@
 					<select  lay-verify="required" id="querysystemId">
 					</select>	
 				</div>
-				<a class="layui-btn btn-add btn-default" id="query"
-					style="margin-left: 20px;">查询</a> <a
-					class="layui-btn btn-add btn-default" style="margin-left: 20px;"
-					id="resetQuery">清空</a>
+				<a class="layui-btn btn-default" id="query" style="margin-left: 20px;">查询</a> 
+				<a class="layui-btn btn-default" style="margin-left: 20px;" id="resetQuery">清空</a>
 			</form>
 		</span>
 	</div>
@@ -250,7 +246,6 @@
 					cols: [
 						[ //标题栏
 							{type:'checkbox',fixed:'left'},	
-							{field: 'channelId',title: '渠道ID',width: 100, sort: true},
 							{field: 'channelName',title: '渠道名称',width: 150,sort:true}, 
 							{field: 'systemCnname',title: '对接后端系统',width: 120,sort:true,align: 'center'},
 							{field: 'channelStatus',title: '渠道接入状态',width: 120, sort: true,align: 'center'}, 
@@ -273,13 +268,19 @@
 						
 					}
 				});
-
-				// 获取选中行
-				table.on('checkbox(ChannelTable)', function(obj) {
-					layer.msg('123');
-					console.log(obj.checked); //当前是否选中状态
-					console.log(obj.data); //选中行的相关数据
-					console.log(obj.type); //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+				
+				//关键词查询:ChannelEnname,ChannelStatus,querysystemId
+				$('#query').on('click',function(){
+					var channelName=$('#queryChannelName').val();
+					var channelStatus=$('#queryChannelStatus').val();
+					var systemId=$('#querysystemId').val();
+					tableIns.reload({
+						where:{
+							"channelName":channelName,
+							"channelStatus":channelStatus,
+							"systemId":systemId
+						}
+					});
 				});
 
 				// 刷新
@@ -291,20 +292,6 @@
 					table.reload('ChannelTable');
 				});
 				
-				//关键词查询:ChannelEnname,ChannelStatus,querysystemId
-				$('#query').on('click',function(){
-					var channelEnname=$('#queryChannelName').val();
-					var channelStatus=$('#queryChannelStatus').val();
-					var systemId=$('#querysystemId').val();
-					tableIns.reload({
-						where:{
-							"channelName":channelName,
-							"channelStatus":channelStatus,
-							"systemId":systemId
-						}
-					});
-
-				});
 				//清空搜索框
 				$('#resetQuery').click(function(){
 					$('#queryChannelName').val('');
@@ -394,6 +381,7 @@
 				});
 				
 			});
+			
 			//提交接口服务变动
 			function updateChannel(){
 				var channelId=$('#channelId').val();

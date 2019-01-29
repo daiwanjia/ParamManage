@@ -1,11 +1,13 @@
 package com.dcits.paramManage.service;
 
+import java.util.List;
+
 import com.dcits.paramManage.entity.Environment;
 
 public interface EnvironmentService {
 
 	/**
-	 * 查询所有
+	 * 查询环境信息
 	 * @return
 	 * @throws Exception
 	 */
@@ -36,4 +38,10 @@ public interface EnvironmentService {
      * @return  不存在返回false，否则true
      */
     boolean judgeExistEnvironment(String environmentId);
+    
+    /**
+     * 查询所有环境列表
+     * @return
+     */
+    List<Environment> selectAllEnvironment();
 }

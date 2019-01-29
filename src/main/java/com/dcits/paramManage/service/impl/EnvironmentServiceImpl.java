@@ -68,6 +68,12 @@ public class EnvironmentServiceImpl implements EnvironmentService{
 		}
 		return true;
 	}
+
+	@Override
+	public List<Environment> selectAllEnvironment() {
+		
+		return environmentMapper.queryEnvironmentInfo();
+	}
 	
 	
 

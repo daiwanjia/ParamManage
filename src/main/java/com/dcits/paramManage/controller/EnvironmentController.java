@@ -123,6 +123,17 @@ public class EnvironmentController {
 		}
 		return jsonMsg.toJSONString();
 	}
+	
+	/**
+	 * 查询所有环境列表
+	 * @return 
+	 * @throws Exception 
+	 */
+	@ResponseBody
+	@RequestMapping(value="/allEnvironment",method=RequestMethod.GET,produces="application/json;charset=UTF-8")
+	public String allEnvironment() throws Exception{
+		return environmentService.selectAllEnvironment().toString();
+	}
 
 	/**
 	 * 异常处理

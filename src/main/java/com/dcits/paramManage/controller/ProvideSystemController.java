@@ -1,14 +1,8 @@
 package com.dcits.paramManage.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,8 +19,6 @@ public class ProvideSystemController {
 	@Autowired
 	private ProvideSystemService systemService;
 		
-	private static Log log=LogFactory.getLog(ProvideSystemController.class);
-	
 	/**
 	 * 分页查询系统信息
 	 * @param limit 每页总数据量
@@ -46,7 +38,7 @@ public class ProvideSystemController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/addSystem",method=RequestMethod.POST,produces={"application/json;charset=UTF-8"})
+	@RequestMapping(value="/addSystem",method={RequestMethod.POST,RequestMethod.GET},produces={"application/json;charset=UTF-8"})
 	public String addSystem(@RequestBody ProvideSystem providesystem){
 		JSONObject jsonObject=new JSONObject();
 		

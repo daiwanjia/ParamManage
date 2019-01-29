@@ -1,11 +1,8 @@
 package com.dcits.paramManage.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.dcits.paramManage.entity.IntfService;
 import com.dcits.paramManage.service.IntfServiceService;
@@ -27,7 +23,6 @@ public class IntfServiceController {
 
 	@Autowired
 	private IntfServiceService service;
-	private static Log log = LogFactory.getLog(IntfServiceController.class);
 
 	/**
 	 * 分页查询服务接口信息

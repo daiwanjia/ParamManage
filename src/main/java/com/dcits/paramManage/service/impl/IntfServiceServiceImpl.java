@@ -1,24 +1,15 @@
 package com.dcits.paramManage.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.rowset.spi.XmlReader;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,8 +37,6 @@ public class IntfServiceServiceImpl implements IntfServiceService {
 	private IntfServiceMapper serviceMapper;
 	@Autowired
 	private ProvideSystemMapper systemMapper;
-
-	private static Log log = LogFactory.getLog(IntfServiceServiceImpl.class);
 
 	// 新增接口
 	@Override

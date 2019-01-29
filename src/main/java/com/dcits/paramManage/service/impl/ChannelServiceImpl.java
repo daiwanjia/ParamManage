@@ -3,8 +3,6 @@ package com.dcits.paramManage.service.impl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -126,6 +124,7 @@ public class ChannelServiceImpl implements ChannelService {
 		// 前端传递的渠道ids
 		List<String> inIntfIds = new ArrayList<>();
 		for (int i = 0; i < chnnIntfList.size(); i++) {
+			@SuppressWarnings("unchecked")
 			HashMap<String, String> intfmap = (HashMap<String, String>) chnnIntfList.get(i);
 			inIntfIds.add(intfmap.get("serviceId"));// 对象中获取serviceId存入数组
 		}
@@ -167,6 +166,7 @@ public class ChannelServiceImpl implements ChannelService {
 		// 创建sid数组
 		List<String> sids = new ArrayList<>();
 		for (int i = 0; i < list.size(); i++) {
+			@SuppressWarnings("unchecked")
 			HashMap<String, String> map = (HashMap<String, String>) list.get(i);
 			String sid = map.get("sid");
 			sids.add(sid);

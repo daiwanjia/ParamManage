@@ -109,4 +109,5 @@
 		from environment_info
 		where environment_id=#{environmentId,jdbcType=VARCHAR}
 	</select>
+
 </mapper>

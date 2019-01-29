@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.dcits.paramManage.common.CustomException;
 import com.dcits.paramManage.entity.User;
 import com.dcits.paramManage.mapper.UserMapper;
 import com.dcits.paramManage.service.UserService;
